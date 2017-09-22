@@ -1,6 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net451</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <DisableImplicitAssetTargetFallback>true</DisableImplicitAssetTargetFallback>
+    <AssetTargetFallback>net45</AssetTargetFallback>
     <DebugType>full</DebugType>
     <DisableImplicitFSharpCoreReference>true</DisableImplicitFSharpCoreReference>
     <RootNamespace>JetBrains.ReSharper.Plugins.FSharp.Daemon</RootNamespace>
@@ -12,8 +14,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="FSharp.Core" Version="4.0.*" />
-    <PackageReference Include="JetBrains.FSharp.Compiler.Service" Version="14.0.3" />
+    <PackageReference Include="FSharp.Core" Version="4.1.*" />
+    <PackageReference Include="JetBrains.FSharp.Compiler.Service" Version="14.0.4" />
     <PackageReference Include="JetBrains.Rider.SDK" Version="$(RiderSDKVersion)"/>
   </ItemGroup>
 

@@ -8,6 +8,10 @@
   </PropertyGroup>
   
   <PropertyGroup>
+  	<JetReferencesNoFilter>true</JetReferencesNoFilter>
+  </PropertyGroup>
+
+  <PropertyGroup>
     <RiderSDKVersion>[2017.2.20170903.124051]</RiderSDKVersion>
   </PropertyGroup>
 </Project>
