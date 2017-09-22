@@ -22,7 +22,7 @@
     <completion.completionSessionStrategy language="F#" implementationClass="com.jetbrains.rider.plugins.fsharp.services.completion.FSharpCompletionStrategy" />
     <!--<backend.autoPopup.support language="F#" implementationClass="com.jetbrains.rider.completion.IgnoreBackendAndGenericRider" />-->
     <codeInsight.parameterInfo language="F#" implementationClass="com.jetbrains.rider.parameterInfo.RiderParameterInfoHandler" />
-    <codeStyleSettingsProvider implementation="com.jetbrains.rider.settings.FSharpCodeStyleSettingsProvider" />
+    <!--<codeStyleSettingsProvider implementation="com.jetbrains.rider.settings.FSharpCodeStyleSettingsProvider" />-->
 
 
     <fileTypeFactory id="F# Script" implementation="com.jetbrains.rider.ideaInterop.fileTypes.fsharp.FSharpScriptFileTypeFactory" />

@@ -1,8 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <DisableImplicitAssetTargetFallback>true</DisableImplicitAssetTargetFallback>
-    <AssetTargetFallback>net45</AssetTargetFallback>
     <RootNamespace>JetBrains.ReSharper.Plugins.FSharp.Psi.LanguageService</RootNamespace>
     <AssemblyName>JetBrains.ReSharper.Plugins.FSharp.Psi.LanguageService</AssemblyName>
   </PropertyGroup>
@@ -10,7 +8,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Psi.FSharp\Psi.FSharp.csproj" />
     <ProjectReference Include="..\Psi.FSharp.Parsing\Psi.FSharp.Parsing.fsproj" />
-    <ProjectReference Include="..\FSharp.Services\FSharp.Services.fsproj" />
+    <!--<ProjectReference Include="..\FSharp.Services\FSharp.Services.fsproj" />-->
   </ItemGroup>
 
   <ItemGroup>

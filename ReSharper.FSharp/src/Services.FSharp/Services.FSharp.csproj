@@ -1,8 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <DisableImplicitAssetTargetFallback>true</DisableImplicitAssetTargetFallback>
-    <AssetTargetFallback>net45</AssetTargetFallback>
     <RootNamespace>JetBrains.ReSharper.Plugins.FSharp.Services.Cs</RootNamespace>
     <AssemblyName>JetBrains.ReSharper.Plugins.FSharp.Services.Cs</AssemblyName>
   </PropertyGroup>
