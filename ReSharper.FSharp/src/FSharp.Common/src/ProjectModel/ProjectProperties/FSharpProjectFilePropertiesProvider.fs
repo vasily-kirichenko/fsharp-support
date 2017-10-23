@@ -7,4 +7,4 @@ type FSharpProjectFilePropertiesProvider() =
     inherit ProjectFilePropertiesProviderBase()
 
     override x.IsApplicable(properties) = properties :? FSharpProjectProperties
-    override x.CreateProjectFileProperties() = ProjectFileProperties() :> IProjectFileProperties
+    override x.CreateProjectFileProperties() = ProjectFileProperties() :> _

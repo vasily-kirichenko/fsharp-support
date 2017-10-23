@@ -13,23 +13,23 @@ open Microsoft.FSharp.Compiler
 open Microsoft.FSharp.Compiler.Ast
 open Microsoft.FSharp.Compiler.SourceCodeServices
 
-type FSharpParser(file: IPsiSourceFile, checkerService: FSharpCheckerService, logger) =
-    member private x.CreateTreeBuilder lexer (parseResults: FSharpParseFileResults option) lifetime (options: FSharpParsingOptions option) =
+type FSharpParser(sourceFile, checkerService: FSharpCheckerService, logger) =
+    member private x.CreateTreeBuilder lexer (parseResults: FSharpParseFileResults option) lifetime options =
         match options, parseResults with
         | Some options, Some results when results.ParseTree.IsSome ->
             match results.ParseTree with
             | Some(ParsedInput.ImplFile(_)) as treeOpt ->
-                FSharpImplTreeBuilder(file, lexer, treeOpt, lifetime, logger) :> FSharpTreeBuilderBase, treeOpt
+                FSharpImplTreeBuilder(sourceFile, lexer, treeOpt, lifetime, logger) :> FSharpTreeBuilderBase, treeOpt
             | Some(ParsedInput.SigFile(_)) as treeOpt ->
-                FSharpSigTreeBuilder(file, lexer, treeOpt, lifetime, logger) :> FSharpTreeBuilderBase, treeOpt
+                FSharpSigTreeBuilder(sourceFile, lexer, treeOpt, lifetime, logger) :> FSharpTreeBuilderBase, treeOpt
         | _ ->
-            FSharpFakeTreeBuilder(file, lexer, lifetime, logger, options) :> FSharpTreeBuilderBase, None
+            FSharpFakeTreeBuilder(sourceFile, lexer, lifetime, logger, options) :> FSharpTreeBuilderBase, None
 
     interface IParser with
         member this.ParseFile() =
             let lifetime = Lifetimes.Define().Lifetime
-            let options, parseResults = checkerService.ParseFile(file)
-            let tokenBuffer = TokenBuffer(FSharpLexer(file.Document, checkerService.GetDefines(file)))
+            let options, parseResults = checkerService.ParseFile(sourceFile)
+            let tokenBuffer = TokenBuffer(FSharpLexer(sourceFile.Document, checkerService.GetDefines(sourceFile)))
             let lexer = tokenBuffer.CreateLexer()
             let treeBuilder, tree = this.CreateTreeBuilder lexer parseResults lifetime options
 
@@ -38,7 +38,7 @@ type FSharpParser(file: IPsiSourceFile, checkerService: FSharpCheckerService, lo
                 fsFile.ParseResults <- parseResults
                 fsFile.CheckerService <- checkerService
                 fsFile.ActualTokenBuffer <- tokenBuffer
-                fsFile :> IFile
+                fsFile :> _
             | _ ->
                 logger.LogMessage(LoggingLevel.ERROR, "FSharpTreeBuilder returned null")
                 null

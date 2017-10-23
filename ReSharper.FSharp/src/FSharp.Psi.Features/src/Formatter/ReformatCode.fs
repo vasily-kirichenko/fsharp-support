@@ -71,11 +71,9 @@ type ReformatCode() =
                         else
                             let formatted = CodeFormatter.FormatAST(parsedInput, filePath, Some source, formatConfig)
                             Some(DocumentChange(document, 0, source.Length, formatted, stamp, modificationSide))
-    
-                    match change with
-                    | Some change -> 
+
+                    change |> Option.iter (fun change ->
                         document.ChangeDocument(change, TimeStamp.NextValue)
-                        sourceFile.GetPsiServices().Files.CommitAllDocuments()
-                    | _ -> ()
+                        sourceFile.GetPsiServices().Files.CommitAllDocuments())
                 | _ -> ()
             | _ -> ()

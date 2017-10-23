@@ -67,8 +67,8 @@ type FSharpCheckerService(lifetime, logger: Util.ILogger, onSolutionCloseNotifie
         | _ -> []
 
     member x.ParseAndCheckFile([<NotNull>] file: IPsiSourceFile, allowStaleResults, useCachedScriptOptions) =
-        match x.OptionsProvider.GetProjectOptions(file, useCachedScriptOptions) with
-        | Some options ->
+        x.OptionsProvider.GetProjectOptions(file, useCachedScriptOptions)
+        |> Option.bind (fun options ->
             let path = file.GetLocation().FullPath
             if Array.isEmpty options.SourceFiles then
                 Logger.LogMessage(logger, LoggingLevel.WARN, "Requested type check for {0}, but msbuild project doesn't have any source files yet", path)
@@ -78,8 +78,7 @@ type FSharpCheckerService(lifetime, logger: Util.ILogger, onSolutionCloseNotifie
             match x.Checker.ParseAndCheckDocument(path, source, options, allowStaleResults).RunAsTask() with
             | Some (parseResults, checkResults) when parseResults.ParseTree.IsSome ->
                 Some { ParseResults = parseResults; ParseTree = parseResults.ParseTree.Value; CheckResults = checkResults }
-            | _ -> None
-        | _ -> None
+            | _ -> None)
 
     member x.InvalidateProject(project: FSharpProject) =
         x.Checker.InvalidateConfiguration(project.Options.Value)

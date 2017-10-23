@@ -1,26 +1,25 @@
-namespace JetBrains.ReSharper.Plugins.FSharp.Common.Checker
+[<AutoOpen>]
+module JetBrains.ReSharper.Plugins.FSharp.Common.Checker.FSharpCheckerExtensions
 
 open System
 open System.Runtime.CompilerServices
 open Microsoft.FSharp.Compiler.SourceCodeServices
 
-module FSharpCheckerExtensions =
-    let map (f: 'T -> 'U) (a: Async<'T>) : Async<'U> =
-        async {
-            let! a = a
-            return f a
-        }
+let map (f: 'T -> 'U) (a: Async<'T>) : Async<'U> =
+    async {
+        let! a = a
+        return f a
+    }
 
-    type CheckResults =
-        | Ready of (FSharpParseFileResults * FSharpCheckFileResults) option
-        | StillRunning of Async<(FSharpParseFileResults * FSharpCheckFileResults) option>
-
-open FSharpCheckerExtensions
+type CheckResults =
+    | Ready of (FSharpParseFileResults * FSharpCheckFileResults) option
+    | StillRunning of Async<(FSharpParseFileResults * FSharpCheckFileResults) option>
 
 [<Extension; Sealed; AbstractClass>]
 type FSharpCheckerExtensions =
     [<Extension>]
-    static member ParseAndCheckDocument(checker: FSharpChecker, filePath: string, sourceText: string, options: FSharpProjectOptions, allowStaleResults: bool) =
+    static member ParseAndCheckDocument(checker: FSharpChecker, filePath: string, sourceText: string, options: FSharpProjectOptions, allowStaleResults: bool, ?timeout: int) =
+        let timeout = defaultArg timeout 1500
         let parseAndCheckFile =
             async {
                 let! parseResults, checkFileAnswer = checker.ParseAndCheckFileInProject(filePath, sourceText.GetHashCode(), sourceText, options)
@@ -35,7 +34,7 @@ type FSharpCheckerExtensions =
         let tryGetFreshResultsWithTimeout() : Async<CheckResults> =
             async {
                 try
-                    let! worker = Async.StartChild(parseAndCheckFile, 2000)
+                    let! worker = Async.StartChild(parseAndCheckFile, timeout)
                     let! result = worker
                     return Ready result
                 with :? TimeoutException ->

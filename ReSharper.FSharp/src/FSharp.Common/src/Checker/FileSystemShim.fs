@@ -16,10 +16,7 @@ type FileSystemShim(lifetime: Lifetime, sourceCache: FSharpSourceCache) as this 
 
     let getSource (path: string) =
         match FileSystemPath.TryParse(path) with
-        | path when not path.IsEmpty ->
-            match sourceCache.GetSource(path) with
-            | Some source -> Some source
-            | _ -> None
+        | path when not path.IsEmpty -> sourceCache.GetSource(path)
         | _ -> None
 
     interface IFileSystem with
