@@ -7,6 +7,6 @@ open Microsoft.FSharp.Compiler.SourceCodeServices
 
 [<AllowNullLiteral>]
 type IFSharpProjectOptionsProvider =
-    abstract member GetProjectOptions: IPsiSourceFile -> FSharpProjectOptions option
+    abstract member GetProjectOptions: IPsiSourceFile * useCachedScriptOptions: bool -> FSharpProjectOptions option
     abstract member GetParsingOptions: IPsiSourceFile -> FSharpParsingOptions option
     abstract member HasPairFile: IPsiSourceFile -> bool

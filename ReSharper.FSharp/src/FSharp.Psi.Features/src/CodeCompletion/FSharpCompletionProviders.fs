@@ -33,7 +33,7 @@ type FSharpLookupItemsProviderBase(logger: ILogger, getAllSymbols, filterResolve
         let basicContext = context.BasicContext
         match basicContext.File with
         | :? IFSharpFile as fsFile when fsFile.ParseResults.IsSome ->
-            match fsFile.GetParseAndCheckResults(true) with
+            match fsFile.GetParseAndCheckResults(true, true) with
             | Some results ->
                 let checkResults = results.CheckResults
                 let parseResults = fsFile.ParseResults

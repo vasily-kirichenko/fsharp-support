@@ -26,14 +26,15 @@ namespace JetBrains.ReSharper.Plugins.FSharp.Psi.Impl.Tree
     public override PsiLanguageType Language => FSharpLanguage.Instance;
     public bool ReferencesResolved { get; set; }
 
-    public FSharpOption<FSharpParseAndCheckResults> GetParseAndCheckResults(bool allowStaleResults, [CanBeNull] Action interruptChecker = null)
+    public FSharpOption<FSharpParseAndCheckResults> GetParseAndCheckResults(bool allowStaleResults,
+      bool useCachedScriptOptions, [CanBeNull] Action interruptChecker = null)
     {
       lock (ourCheckLock)
       {
         InterruptableActivityCookie.CheckAndThrow();
         var sourceFile = GetSourceFile();
         Assertion.AssertNotNull(sourceFile, "sourceFile != null");
-        return CheckerService.ParseAndCheckFile(sourceFile, allowStaleResults);
+        return CheckerService.ParseAndCheckFile(sourceFile, allowStaleResults, useCachedScriptOptions);
       }
     }
 
@@ -42,7 +43,7 @@ namespace JetBrains.ReSharper.Plugins.FSharp.Psi.Impl.Tree
       lock (ourGetSymbolsLock)
         if (myDeclarationSymbols == null)
         {
-          var checkResults = GetParseAndCheckResults(false);
+          var checkResults = GetParseAndCheckResults(false, true);
           var document = GetSourceFile()?.Document;
           var declaredSymbolUses = checkResults?.Value.CheckResults.GetAllUsesOfAllSymbolsInFile().RunAsTask();
           if (declaredSymbolUses == null || document == null)

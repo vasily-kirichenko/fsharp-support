@@ -1,6 +1,7 @@
 ﻿namespace JetBrains.ReSharper.Plugins.FSharp.Common.Checker
 
 open System
+open System.Collections.Concurrent
 open System.Collections.Generic
 open System.Linq
 open System.Threading
@@ -40,6 +41,7 @@ type FSharpProjectOptionsProvider(lifetime, logger, solution: ISolution, checker
 
     let projects = Dictionary<IProject, FSharpProject>()
     let projectsToInvalidate = JetHashSet<IProject>()
+    let scriptOptions = ConcurrentDictionary<IPsiSourceFile, FSharpProjectOptions>()
     let getScriptOptionsLock = obj()
 
     do
@@ -115,10 +117,14 @@ type FSharpProjectOptionsProvider(lifetime, logger, solution: ISolution, checker
                     projects.Remove(p) |> ignore
             projectsToInvalidate.Clear())
 
-    member private x.GetScriptOptions(file: IPsiSourceFile) =
+    member private x.GetScriptOptions(file: IPsiSourceFile, useCached) =
         let path = file.GetLocation()
         let filePath = path.FullPath
         let source = file.Document.GetText()
+        match useCached, scriptOptions.TryGetValue(file) with
+        | true, (true, options) -> Some options
+        | _ ->
+
         lock getScriptOptionsLock (fun _ ->
         let getScriptOptionsAsync = checkerService.Checker.GetProjectOptionsFromScript(filePath, source)
         try
@@ -126,6 +132,7 @@ type FSharpProjectOptionsProvider(lifetime, logger, solution: ISolution, checker
             if not errors.IsEmpty then
                 Logger.Warn(logger, "Script options for {0}: {1}", filePath, concatErrors errors)
             let options = x.FixScriptOptions(options)
+            scriptOptions.[file] <- options
             Some options
         with
         | :? ProcessCancelledException -> reraise()
@@ -142,8 +149,8 @@ type FSharpProjectOptionsProvider(lifetime, logger, solution: ISolution, checker
         projectsToInvalidate.Clear() // todo: check?
 
     interface IFSharpProjectOptionsProvider with
-        member x.GetProjectOptions(file) =
-            if fsFileService.IsScript(file) then x.GetScriptOptions(file) else
+        member x.GetProjectOptions(file, useCachedScriptOptions) =
+            if fsFileService.IsScript(file) then x.GetScriptOptions(file, useCachedScriptOptions) else
             if file.PsiModule.IsMiscFilesProjectModule() then None else
 
             lock projects (fun _ ->

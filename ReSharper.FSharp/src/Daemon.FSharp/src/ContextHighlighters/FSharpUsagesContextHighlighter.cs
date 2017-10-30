@@ -53,7 +53,8 @@ namespace JetBrains.ReSharper.Plugins.FSharp.Daemon.Cs.ContextHighlighters
       // todo: type parameters: t<$caret$type> or t<'$caret$ttype>
       // todo: namespaces, use R# search?
 
-      var checkResults = file.GetParseAndCheckResults(true)?.Value.CheckResults;
+      var file = psiView.GetSelectedTreeNode<IFSharpFile>();
+      var checkResults = file?.GetParseAndCheckResults(true, true)?.Value.CheckResults;
       if (checkResults == null)
         return;
 

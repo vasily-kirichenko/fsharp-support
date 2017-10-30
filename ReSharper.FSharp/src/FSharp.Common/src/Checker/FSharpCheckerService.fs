@@ -66,8 +66,8 @@ type FSharpCheckerService(lifetime, logger: Util.ILogger, onSolutionCloseNotifie
         | Some options -> options.ConditionalCompilationDefines
         | _ -> []
 
-    member x.ParseAndCheckFile([<NotNull>] file: IPsiSourceFile, allowStaleResults) =
-        match x.OptionsProvider.GetProjectOptions(file) with
+    member x.ParseAndCheckFile([<NotNull>] file: IPsiSourceFile, allowStaleResults, useCachedScriptOptions) =
+        match x.OptionsProvider.GetProjectOptions(file, useCachedScriptOptions) with
         | Some options ->
             let path = file.GetLocation().FullPath
             if Array.isEmpty options.SourceFiles then

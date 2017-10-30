@@ -47,7 +47,7 @@ type FSharpIdentifierTooltipProvider(lifetime, solution, presenter, logger, xmlD
         | :? IFSharpFile as fsFile ->
             match fsFile.FindTokenAt(documentRange.StartOffset) with
             | :? FSharpIdentifierToken as token ->
-                match fsFile.GetParseAndCheckResults(true) with
+                match fsFile.GetParseAndCheckResults(true, true) with
                 | Some results ->
                     let checkResults = results.CheckResults
                     let coords = document.GetCoordsByOffset(token.GetTreeEndOffset().Offset)
