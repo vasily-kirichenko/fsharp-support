@@ -14,26 +14,23 @@ let private programFilesX86 =
     else String.Empty
 
 let private tryFindFile dirs file =
-      let files =
-          dirs
-          |> Seq.map (fun (path : string) ->
-              try
-                 let path =
-                    if path.StartsWith("\"") && path.EndsWith("\"")
-                    then path.Substring(1, path.Length - 2)
-                    else path
-                 let dir = new DirectoryInfo(path)
-                 if not dir.Exists then ""
-                 else
-                     let fi = new FileInfo(dir.FullName </> file)
-                     if fi.Exists then fi.FullName
-                     else ""
-              with
-              | _ -> "")
-          |> Seq.filter ((<>) "")
-          |> Seq.cache
-      if not (Seq.isEmpty files) then Some(Seq.head files) 
-      else None
+      dirs
+      |> Seq.map (fun (path : string) ->
+          try
+             let path =
+                if path.StartsWith("\"") && path.EndsWith("\"")
+                then path.Substring(1, path.Length - 2)
+                else path
+             let dir = new DirectoryInfo(path)
+             if not dir.Exists then ""
+             else
+                 let fi = new FileInfo(dir.FullName </> file)
+                 if fi.Exists then fi.FullName
+                 else ""
+          with
+          | _ -> "")
+      |> Seq.filter ((<>) "")
+      |> Seq.tryHead
 
 let fsharpCoreOpt =
     if PlatformUtil.IsRunningOnMono then
@@ -55,5 +52,5 @@ let ensureCorrectFSharpCore (options: string[]) =
     |> Option.map (fun path ->
                    let fsharpCoreRef = sprintf "-r:%s" path
                    [| yield fsharpCoreRef
-                      yield! options |> Seq.filter (not << isFSharpCore) |])
-    |> function | Some options -> options | _ -> options
+                      yield! options |> Array.filter (not << isFSharpCore) |])
+    |> Option.defaultValue options

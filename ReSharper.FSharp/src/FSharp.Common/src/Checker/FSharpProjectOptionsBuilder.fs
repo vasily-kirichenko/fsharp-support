@@ -119,12 +119,12 @@ type FSharpProjectOptionsBuilder(solution: ISolution,
                             else if path.IsImplFile() && sigFiles.Contains(path.NameWithoutExtension)
                                  then pairFiles.add(path))))
         let filesFromTargets = filesFromTargetsProvider.GetFilesForProject(projectMark)
-        let files =
-            seq { yield! filesFromTargets.CompileBefore
-                  yield! filesFromTargets.Compile
-                  yield! files
-                  yield! filesFromTargets.CompileAfter }
-        files |> Array.ofSeq, pairFiles
+        
+        [| yield! filesFromTargets.CompileBefore
+           yield! filesFromTargets.Compile
+           yield! files
+           yield! filesFromTargets.CompileAfter |], 
+        pairFiles
 
     member private x.GetReferencedPathsOptions(project: IProject) =
         let framework = project.GetCurrentTargetFrameworkId()
